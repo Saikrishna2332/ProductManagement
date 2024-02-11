@@ -1,7 +1,6 @@
 # ProductManagement
 import java.util.HashMap;
 import java.util.Map;
-
 class Product {
     private String productId;
     private String title;
