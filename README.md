@@ -1,75 +1,62 @@
-# ProductManagement
+//ProductManagement
 import java.util.HashMap;
 import java.util.Map;
 class Product {
-    private String productId;
+    private int productId;
     private String title;
     private String author;
     private double basePrice;
     private int quantity;
-    public Product(String productId, String title, String author, double basePrice, int quantity) {
+    public Product(int productId, String title, String author, double basePrice, int quantity) {
         this.productId = productId;
         this.title = title;
         this.author = author;
         this.basePrice = basePrice;
         this.quantity = quantity;
     }
-    public String getProductId() {
-        return productId;
+    public void applyDiscount(double discountPercentage) {
+        double discountAmount = basePrice * discountPercentage / 100;
+        basePrice -= discountAmount;
     }
-
-    public void setBasePrice(double basePrice) {
-        this.basePrice = basePrice;
+    public void applyTax(double taxRate) {
+        double taxAmount = basePrice * taxRate / 100;
+        basePrice += taxAmount;
     }
-    public double applyDiscount(double discountPercentage) {
-        double discountAmount = basePrice * (discountPercentage / 100);
-        return basePrice - discountAmount;
-    }
-    public double applyTax(double taxRate) {
-        double taxAmount = basePrice * (taxRate / 100);
-        return basePrice + taxAmount;
+    public void displayDetails() {
+        System.out.println("Product ID: " + productId);
+        System.out.println("Title: " + title);
+        System.out.println("Author: " + author);
+        System.out.println("Base Price: ₹" + basePrice);
+        System.out.println("Quantity: " + quantity);
     }
 }
-
-class ProductCatalog {
-    private Map<String, Product> catalog;
-
-    public ProductCatalog() {
+class ProductManager {
+    private Map<Integer, Product> catalog;
+    public ProductManager() {
         this.catalog = new HashMap<>();
+        catalog.put(123, new Product(123, "The Adventure", "Author X", 30.0, 50));
+        catalog.put(456, new Product(456, "Tax Law Handbook", "Author Y", 40.0, 30));
     }
-    public void addProduct(Product product) {
-        catalog.put(product.getProductId(), product);
-    }
-    public String updateProductPrice(String productId, String type, double value) {
+    public void applyDiscountOrTax(int productId, double discountOrTax, boolean isDiscount) {
         Product product = catalog.get(productId);
-
-        if (product == null) {
-            return "Product not found";
-        }
-
-        if ("discount".equalsIgnoreCase(type)) {
-            double discountedPrice = product.applyDiscount(value);
-            product.setBasePrice(discountedPrice);
-            return "Discount applied successfully. Updated price: " + discountedPrice;
-        } else if ("tax".equalsIgnoreCase(type)) {
-            double finalPrice = product.applyTax(value);
-            product.setBasePrice(finalPrice);
-            return "Tax applied successfully. Updated price: " + finalPrice;
+        if (product != null) {
+            if (isDiscount) {
+                product.applyDiscount(discountOrTax);
+                System.out.println("Discount applied successfully.");
+            } else {
+                product.applyTax(discountOrTax);
+                System.out.println("Tax applied successfully.");
+            }
+            product.displayDetails();
         } else {
-            return "Invalid operation type. Use 'discount' or 'tax'.";
+            System.out.println("Product with ID " + productId + " not found.");
         }
     }
 }
 public class ProductManagement {
     public static void main(String[] args) {
-        ProductCatalog productCatalog = new ProductCatalog();
-        Product fictionBook = new Product("1", "The Adventure", "Author X", 30.0, 50);
-        productCatalog.addProduct(fictionBook);
-        String discountResult = productCatalog.updateProductPrice("1", "discount", 10.0);
-        System.out.println(discountResult);
-        Product nonFictionBook = new Product("2", "Tax Law Handbook", "Author Y", 40.0, 30);
-        productCatalog.addProduct(nonFictionBook);
-        String taxResult = productCatalog.updateProductPrice("2", "tax", 5.0);
-        System.out.println(taxResult);
+        ProductManager manager = new ProductManager();
+        manager.applyDiscountOrTax(123, 10.0, true);
+        manager.applyDiscountOrTax(456, 5.0, false);
     }
 }
